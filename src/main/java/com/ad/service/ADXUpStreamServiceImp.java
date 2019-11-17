@@ -32,40 +32,27 @@ public class ADXUpStreamServiceImp implements UpStreamService {
         app.setVer(sigmobRequest.getApp().getVer());
 
         com.ad.model.adx.request.Device device = new com.ad.model.adx.request.Device();
-        device.setUa(sigmobRequest.getDevice().getUa());
-//        device.setUa(bidRequest.getDevice().getGeo());
-        device.setIp(sigmobRequest.getDevice().getIp());
-        device.setIpv6(sigmobRequest.getDevice().getIpv6());
+        device.setCarrier(sigmobRequest.getDevice().getMccmnc());
+        device.setConnectiontype(sigmobRequest.getDevice().getConnectiontype());
         device.setDevicetype(sigmobRequest.getDevice().getDevicetype());
-        device.setMake(sigmobRequest.getDevice().getMake());
-        device.setModel(sigmobRequest.getDevice().getModel());
-        device.setOs(sigmobRequest.getDevice().getOs() == 1 ? "ios" : "android");
-        device.setOsv(sigmobRequest.getDevice().getOsv());
+        // 如果是Android设备
+        if (sigmobRequest.getDevice().getOs() == 2) {
+            device.setDid(sigmobRequest.getDevice().getImei());
+            device.setDidmd5(DigestUtils.md5Hex(sigmobRequest.getDevice().getImei()));
+            device.setDpid(sigmobRequest.getDevice().getAndroidid());
+            device.setDpidmd5(DigestUtils.md5Hex(sigmobRequest.getDevice().getAndroidid()));
+            device.setOs("android");
+        }
         device.setH(sigmobRequest.getDevice().getH());
         device.setW(sigmobRequest.getDevice().getW());
-        device.setPpi(2);
-        device.setPxratio(6.5f);
-
-        device.setIfa(sigmobRequest.getDevice().getIfa());
-        device.setIfamd5(DigestUtils.md5Hex(sigmobRequest.getDevice().getIfa()));
-        device.setIfasha1(DigestUtils.sha1Hex(sigmobRequest.getDevice().getIfa()));
-
-        device.setIfv(sigmobRequest.getDevice().getIfa());
-        device.setIfvmd5(DigestUtils.md5Hex(sigmobRequest.getDevice().getIfa()));
-        device.setIfvsha1(DigestUtils.sha1Hex(sigmobRequest.getDevice().getIfa()));
-
-        device.setUdid(sigmobRequest.getDevice().getIfa());
-        device.setUdidmd5(DigestUtils.md5Hex(sigmobRequest.getDevice().getIfa()));
-        device.setUdidsha1(DigestUtils.sha1Hex(sigmobRequest.getDevice().getIfa()));
-
-        device.setMac("8c:85:90:57:34:c3");
-        device.setMacmd5(DigestUtils.md5Hex("8c:85:90:57:34:c3"));
-        device.setMacsha1(DigestUtils.sha1Hex("8c:85:90:57:34:c3"));
-
-        device.setCarrier(sigmobRequest.getDevice().getCarrier());
-        device.setConnectiontype(sigmobRequest.getDevice().getConnectiontype());
-        device.setImsi("460984938923849");
-        device.setOrientation(0);
+        device.setIp(sigmobRequest.getDevice().getIp());
+        device.setMac(sigmobRequest.getDevice().getIpv6());
+        device.setMacmd5(DigestUtils.md5Hex(sigmobRequest.getDevice().getIpv6()));
+        device.setMake(sigmobRequest.getDevice().getMake());
+        device.setModel(sigmobRequest.getDevice().getModel());
+        device.setOrientation(1);
+        device.setOsv(sigmobRequest.getDevice().getOsv());
+        device.setUa(sigmobRequest.getDevice().getUa());
         device.setGeo(new com.ad.model.adx.request.Geo(sigmobRequest.getDevice().getGeo().getLat(), sigmobRequest.getDevice().getGeo().getLon()));
 
         List<com.ad.model.adx.request.Imp> impList = new LinkedList();
@@ -94,17 +81,17 @@ public class ADXUpStreamServiceImp implements UpStreamService {
 
     @Override
     public SigmobResponse sigmobAd(SigmobRequest sigmobRequest) throws IOException {
-        String url = "http://adx.8bcd9.com/bid/v6/rf9mfi5";
-        ADXRequest params = sigmobRequestToADXRequest(sigmobRequest);
-        System.out.println(JSON.toJSONString(sigmobRequest));
+        String url = "http://stage-adx.8bcd9.com/bid/v6/rf9mfi5";
+        String params = JSON.toJSONString(sigmobRequestToADXRequest(sigmobRequest));
+        System.out.println(params);
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)
-                .addHeader("Accept-Encoding", "gzip")
+//                .addHeader("Accept-Encoding", "gzip")
                 .addHeader("X-Forwarded-For", sigmobRequest.getDevice().getIp())
                 .addHeader("User-Agent", sigmobRequest.getDevice().getUa())
-                .post(RequestBody.create(ContentType, JSON.toJSONString(params)))
+                .post(RequestBody.create(ContentType, params))
                 .build();
 
         Response response = client.newCall(request).execute();
@@ -116,7 +103,7 @@ public class ADXUpStreamServiceImp implements UpStreamService {
     }
 
     public static void main(String[] args) throws IOException {
-        SigmobRequest sigmobRequest = JSON.parseObject("{\"app\":{\"bundle\":\"791532221\",\"id\":\"rgndjm7\",\"name\":\"kutoutiao\"},\"at\":1,\"cur\":\"CNY\",\"device\":{\"carrier\":\"China Mobile\",\"connectiontype\":4,\"devicetype\":1,\"geo\":{\"country\":\"CN\",\"lat\":23.886566,\"lon\":100.08697},\"h\":896,\"ifa\":\"EC90A86C-AF40-40FC-BA84-FCA69020AE55\",\"ip\":\"61.49.51.158\",\"ipv6\":\"fe80::cf8:33d2:3aff:1a52%en0\",\"language\":\"zh_CN\",\"make\":\"Apple\",\"mccmnc\":\"46002\",\"model\":\"iPhone11,8\",\"os\":1,\"osv\":\"11.4.1\",\"ua\":\"Mozilla/5.0 (iPhone; CPU iPhone OS 11_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15G77\",\"w\":414},\"id\":\"8404dde8-b188-11e8-87af-00163e0c1b32\",\"imp\":[{\"bidfloor\":0,\"bidfloorcur\":\"CNY\",\"exp\":7200,\"id\":\"1\",\"instl\":1,\"issupportdeeplink\":false,\"pmp\":{\"deals\":{\"at\":3,\"bidfloor\":12000,\"bidfloorcur\":\"CNY\",\"id\":\"384tu8rH\"},\"private\":1},\"tagid\":\"e335620397b\",\"video\":{\"h\":720,\"maxduration\":0,\"mimes\":[\"video/mp4\"],\"minuration\":0,\"w\":1280}}],\"test\":0,\"tmax\":2000,\"wlang\":[\"zh\"],\"wseat\":0}\n", SigmobRequest.class);
+        SigmobRequest sigmobRequest = JSON.parseObject("{\"app\":{\"bundle\":\"791532221\",\"id\":\"rf9ml8f\",\"name\":\"kutoutiao\",\"ver\":\"2.2.1\"},\"at\":1,\"cur\":\"CNY\",\"device\":{\"carrier\":\"China Mobile\",\"connectiontype\":4,\"devicetype\":1,\"geo\":{\"country\":\"CN\",\"lat\":23.886566,\"lon\":100.08697},\"h\":896,\"ifa\":\"EC90A86C-AF40-40FC-BA84-FCA69020AE55\",\"ip\":\"61.49.51.158\",\"ipv6\":\"9C:2E:A1:D0:43:B5\",\"language\":\"zh_CN\",\"make\":\"Xiaomi\",\"mccmnc\":\"46002\",\"model\":\"Redmi 5 Plus\",\"os\":2,\"osv\":\"11.4.1\",\"ua\":\"Mozilla/5.0 (iPhone; CPU iPhone OS 11_4_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15G77\",\"w\":414,\"imei\":\"868771037064745\",\"androidid\":\"22b19878f2cf459f\"},\"id\":\"8404dde8-b188-11e8-87af-00163e0c1b32\",\"imp\":[{\"bidfloor\":0,\"bidfloorcur\":\"CNY\",\"exp\":7200,\"id\":\"1\",\"instl\":1,\"issupportdeeplink\":false,\"pmp\":{\"deals\":{\"at\":3,\"bidfloor\":12000,\"bidfloorcur\":\"CNY\",\"id\":\"384tu8rH\"},\"private\":1},\"tagid\":\"rgnpqvh\",\"video\":{\"h\":720,\"maxduration\":0,\"mimes\":[\"video/mp4\"],\"minuration\":0,\"w\":1280}}],\"test\":0,\"tmax\":2000,\"wlang\":[\"zh\"],\"wseat\":0}", SigmobRequest.class);
         new ADXUpStreamServiceImp().sigmobAd(sigmobRequest);
     }
 }
