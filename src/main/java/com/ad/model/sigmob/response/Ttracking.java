@@ -15,6 +15,13 @@ public class Ttracking {
      * 追踪事件地址数组
      */
     private List<String> eurl;
+
+    public Ttracking() {}
+
+    public Ttracking(String etype, List<String> eurl) {
+        this.etype = etype;
+        this.eurl = eurl;
+    }
 }
 
 enum ETYPE {

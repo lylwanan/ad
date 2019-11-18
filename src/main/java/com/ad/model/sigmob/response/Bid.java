@@ -20,7 +20,7 @@ public class Bid {
      * -------@request-------
      * 出价价格(单位分)
      */
-    private int price;
+    private double price;
     /**
      * -------@request-------
      * 广告id，广告的唯一标识

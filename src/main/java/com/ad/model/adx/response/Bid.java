@@ -31,4 +31,5 @@ public class Bid {
     private int preloadTtl;
     private VideoCard card;
     private List<ResAssets> assets;
+    private Events events;
 }
