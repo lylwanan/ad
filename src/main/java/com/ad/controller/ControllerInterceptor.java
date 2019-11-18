@@ -12,7 +12,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import javax.servlet.http.HttpServletRequest;
 
-@ControllerAdvice
+//@ControllerAdvice
 public class ControllerInterceptor implements ResponseBodyAdvice<Object> {
     @Override
     public boolean supports(MethodParameter methodParameter,

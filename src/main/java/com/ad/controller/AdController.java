@@ -32,6 +32,8 @@ public class AdController {
                 return ApiResult.ERROR(ErrorCodeMsg.NOT_FOUND_AD);
             }
             return ApiResult.SUCCESS(sigmobResponse);
+        } catch (LogicException ex) {
+            throw ex;
         } catch (Exception ex) {
             throw new LogicException("100", ex.getMessage());
         }
