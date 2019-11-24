@@ -1,6 +1,8 @@
 package com.ad.controller;
 
 import com.ad.model.ApiResult;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -25,7 +27,8 @@ public class ControllerInterceptor implements ResponseBodyAdvice<Object> {
                                      MediaType mediaType, Class<? extends HttpMessageConverter<?>> aClass,
                                      ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) {
         HttpServletRequest request = ((ServletServerHttpRequest) serverHttpRequest).getServletRequest();
-
+        System.out.println(JSON.toJSONString(request.getParameterMap(),
+                SerializerFeature.DisableCircularReferenceDetect, SerializerFeature.WriteMapNullValue));
         return body instanceof ApiResult ? (ApiResult) body : new ApiResult(body);
     }
 }

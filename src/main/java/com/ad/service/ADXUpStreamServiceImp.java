@@ -138,7 +138,6 @@ public class ADXUpStreamServiceImp implements UpStreamService {
     public SigmobResponse sigmobAd(SigmobRequest sigmobRequest) throws IOException {
         String url = "http://stage-adx.8bcd9.com/bid/v6/rf9mfi5";
         String params = JSON.toJSONString(sigmobRequestToADXRequest(sigmobRequest));
-        System.out.println(params);
 
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
