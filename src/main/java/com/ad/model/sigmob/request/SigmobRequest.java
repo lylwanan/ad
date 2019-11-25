@@ -53,7 +53,7 @@ public class SigmobRequest {
     /**
      * 使用ISO-4217 字母代码在此投标请求上投标的允许货币数组，目前固定：CNY
      */
-    private String cur;
+    private List<String> cur;
     /**
      * 使用ISO-639-1-Alpha-2 的创意语言白名单，[zh]
      */

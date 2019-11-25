@@ -38,7 +38,7 @@ public class AppExceptionHandler {
 
         String apiResultString = JSON.toJSONString(apiResult);
 
-        logger.error(apiResultString, exception);
+//        logger.error(apiResultString, exception);
         this.writeRequestLog(request, apiResultString);
 
         return apiResult;

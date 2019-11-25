@@ -31,25 +31,51 @@ public class ADXUpStreamServiceImp implements UpStreamService {
         app.setId(sigmobRequest.getApp().getId());
         app.setName(sigmobRequest.getApp().getName());
         app.setBundle(sigmobRequest.getApp().getBundle());
-        app.setVer(sigmobRequest.getApp().getVer());
+        String ver = sigmobRequest.getApp().getVer();
+        app.setVer(ver == null || ver.equals("") ? "1.0.0" : ver);
 
         com.ad.model.adx.request.Device device = new com.ad.model.adx.request.Device();
-        device.setCarrier(sigmobRequest.getDevice().getMccmnc());
-        device.setConnectiontype(sigmobRequest.getDevice().getConnectiontype());
+
+        String carrier = sigmobRequest.getDevice().getMccmnc();
+        String[] array = { "46000", "46001", "46003" };
+        device.setCarrier(carrier == null || carrier.equals("") ? (array[(int)(Math.random() * 3)]) : carrier);
+
+        int connectiontype = sigmobRequest.getDevice().getConnectiontype();
+        if (connectiontype == 2) connectiontype = 4;
+        else if (connectiontype == 3) connectiontype = 5;
+        else if (connectiontype == 4) connectiontype = 6;
+        else if (connectiontype == 5) connectiontype = 7;
+        else if (connectiontype == 100) connectiontype = 2;
+        else if (connectiontype == 101) connectiontype = 1;
+        else connectiontype = 0;
+        device.setConnectiontype(connectiontype);
+
         device.setDevicetype(sigmobRequest.getDevice().getDevicetype());
         // 如果是Android设备
         if (sigmobRequest.getDevice().getOs() == 2) {
-            device.setDid(sigmobRequest.getDevice().getImei());
-            device.setDidmd5(DigestUtils.md5Hex(sigmobRequest.getDevice().getImei()));
-            device.setDpid(sigmobRequest.getDevice().getAndroidid());
-            device.setDpidmd5(DigestUtils.md5Hex(sigmobRequest.getDevice().getAndroidid()));
+            String imei = sigmobRequest.getDevice().getImei();
+            if (imei != null) {
+                device.setDid(imei);
+                device.setDidmd5(DigestUtils.md5Hex(imei));
+            }
+
+            String did = sigmobRequest.getDevice().getAndroidid();
+            if (did != null) {
+                device.setDpid(did);
+                device.setDpidmd5(DigestUtils.md5Hex(did));
+            }
+
             device.setOs("android");
         }
         device.setH(sigmobRequest.getDevice().getH());
         device.setW(sigmobRequest.getDevice().getW());
         device.setIp(sigmobRequest.getDevice().getIp());
-        device.setMac(sigmobRequest.getDevice().getIpv6());
-        device.setMacmd5(DigestUtils.md5Hex(sigmobRequest.getDevice().getIpv6()));
+
+        String ipv6 = sigmobRequest.getDevice().getIpv6();
+        if (ipv6 == null) ipv6 = "9C:2E:A1:D0:43:B5";
+        device.setMac(ipv6);
+        device.setMacmd5(DigestUtils.md5Hex(ipv6));
+
         device.setMake(sigmobRequest.getDevice().getMake());
         device.setModel(sigmobRequest.getDevice().getModel());
         device.setOrientation(1);
@@ -136,7 +162,7 @@ public class ADXUpStreamServiceImp implements UpStreamService {
 
     @Override
     public SigmobResponse sigmobAd(SigmobRequest sigmobRequest) throws IOException {
-        String url = "http://stage-adx.8bcd9.com/bid/v6/rf9mfi5";
+        String url = "http://adx.8bcd9.com/bid/v6/rf9mfi5";
         String params = JSON.toJSONString(sigmobRequestToADXRequest(sigmobRequest));
 
         OkHttpClient client = new OkHttpClient();
